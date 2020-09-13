@@ -1,11 +1,15 @@
-# ギアの歯数
-chainring = 52
+# chainringとcogというデータとraitoを計算するという振る舞いがを持つ「Gear」とうクラスを作る
+class Gear
+  attr_reader :chainring, :cog
+  def initialize(**params)
+    @chainring = params[:chainring]
+    @cog = params[:cog]
+  end
 
-# コグ（1漕ぎあたりの車輪の回転数を決める？大きければ回転数は少なく、小さければ回転数は多い）
-cog = 11
+  def ratio
+    chainring / cog.to_f
+  end
+end
 
-# 歯数52のチェーンリングと歯数11のコグを組み合わせると
-# 戸田る1漕ぎで車輪は5回転する
-ratio = chainring / cog.to_f
-
-puts ratio
+puts Gear.new(chainring: 52, cog: 11).ratio
+puts Gear.new(chainring: 30, cog: 27).ratio
