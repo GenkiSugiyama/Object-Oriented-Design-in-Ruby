@@ -1,12 +1,17 @@
 # chainringとcogというデータとraitoを計算するという振る舞いがを持つ「Gear」とうクラスを作る
 class Gear
-  # 車輪の大きさによる車輪1回転分の進む距離を算出するための属性（rim, tire）を追加
-  attr_reader :chainring, :cog, :rim, :tire
-  def initialize(chainring, cog, rim, tire)
-    @chainring = params[:chainring]
-    @cog = params[:cog]
-    @rim = params[:rim]
-    @tire = params[:tire]
+  # インスタンス変数は常にアクセサメソッドで包み直接参照しないようにする
+  # Rubyではattr_readerによって自動でインスタンス変数のラッパーメソッドが作成される
+  attr_reader :chainring, :cog
+  # 上記のように書くことによって下記の定義をしたことになる
+  # インスタンス変数を振る舞い（メソッド）で包んでいればインスタンス変数に変更があった場合でもこのメソッド内のみで再実装すれば良い
+  # def chainring
+  #   @chainring
+  # end
+
+  def initialize(chainring, cog)
+    @chainring = chainring
+    @cog = cog
   end
 
   # raiio：ギア比（ペダル1漕ぎで車輪が何回転するかを算出する）
@@ -14,17 +19,43 @@ class Gear
     chainring / cog.to_f
   end
 
-  # ギアインチ（車輪の直径×ギア比：ペダル1漕ぎにおける進む距離を算出）
-  # 車輪の直径は 「リムの直径　+ タイヤの厚みの2倍」
+  # ギアインチを算出するgear_inchesメソッドは「タイヤの直径を計算する」と「ギアインチを算出する」の2つの責任を持っていたので分割
   def gear_inches
-    ratio * (rim + (tire * 2))
+    raito * diameter
+  end
+
+  def diameter
+    rim + (tire * 2)
   end
 end
 
-# ギア比は同じだが車輪のサイズが異なる2台の自転車のギアインチを比較
-puts Gear.new(chainring: 52, cog: 11, rim: 26, tire: 1.5).gear_inches
-puts Gear.new(chainring: 52, cog: 11, rim: 24, tire: 1.25).gear_inches
+class RevealingReferences
+  attr_reader :wheels
+  def initialize(data)
+    @wheels = wheelify(data)
+  end
 
-# Gearクラスでgear_inchesメソッドを持たせてrim, tireの値が必要となると
-# 以前動いていた下記のコードは「引数が足りない」とエラーになる
-puts Gear.new(52, 11).ratio
+  # 直径の計算
+  # 「wheelsの値を繰り返し処理する」と「それぞれのwheelの直径を計算する」の2つの責任を持っているのでそれぞれの責任に分割する
+  # def diameters
+  #   wheels.collect {|cell|
+  #     wheel.rim + (wheel.tire * 2)}
+  # end
+  def diameters
+    wheels.collect {|wheel| diameter(wheel)}
+  end
+
+  def deameter(wheel)
+    wheel.rim + (wheel.tire * 2)
+  end
+  # Structでいくつかの属性を1まとめにしている（今回はrimとtireを1つの配列としている）
+  # 直径の計算に必要な属性を1まとめにするための処理だけを抽出している
+  # 2つの属性の値が入った構造体を作り上のinitializeでwheelインスタンスに渡している
+  # 外部のデータ構造の変更があった場合もこの箇所だけ変更すれば良い
+  Wheel = Struct.new(:rim, :tire)
+  def wheelify(data)
+    data.collect{|cell|
+      Wheel.new(cell[0], cell[1])}
+  end
+
+end
