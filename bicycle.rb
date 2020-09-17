@@ -1,18 +1,14 @@
 # chainringとcogというデータとraitoを計算するという振る舞いがを持つ「Gear」とうクラスを作る
 class Gear
-  # インスタンス変数は常にアクセサメソッドで包み直接参照しないようにする
-  # Rubyではattr_readerによって自動でインスタンス変数のラッパーメソッドが作成される
-  attr_reader :chainring, :cog, :wheel
-  # 上記のように書くことによって下記の定義をしたことになる
-  # インスタンス変数を振る舞い（メソッド）で包んでいればインスタンス変数に変更があった場合でもこのメソッド内のみで再実装すれば良い
-  # def chainring
-  #   @chainring
-  # end
+
+  # 依存関係にあるコードの書き方
+  attr_reader :chainring, :cog, :rim, :tire # Wheelクラスのインスタンス作成のためにrim, tireの順に追加で必要な引数を指定
 
   def initialize(chainring, cog, wheel)
     @chainring = chainring
     @cog = cog
-    @wheel = wheel
+    @rim = rim
+    @tire = tire
   end
 
   # raiio：ギア比（ペダル1漕ぎで車輪が何回転するかを算出する）
@@ -22,7 +18,7 @@ class Gear
 
   # ギアインチを算出するgear_inchesメソッドは「タイヤの直径を計算する」と「ギアインチを算出する」の2つの責任を持っていたので分割
   def gear_inches
-    ratio * wheel.diameter
+    ratio * Wheel.new(:rim, :tire).diameter # Gearのメソッド内でWheelクラスのインスタンスを作りWheelクラスに応答するdiameterを呼び出し
   end
 
   # 「車輪の円周を算出したい」というWheelクラスを独立させる明確なニーズが出たので分離させる
