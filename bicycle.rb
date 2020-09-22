@@ -2,13 +2,12 @@
 class Gear
 
   # 依存関係にあるコードの書き方
-  attr_reader :chainring, :cog, :rim, :tire # Wheelクラスのインスタンス作成のためにrim, tireの順に追加で必要な引数を指定
+  attr_reader :chainring, :cog, :wheel
 
-  def initialize(chainring, cog, rim, tire)
+  def initialize(chainring, cog, wheel)
     @chainring = chainring
     @cog = cog
-    @rim = rim
-    @tire = tire
+    @wheel = wheel
   end
 
   # raiio：ギア比（ペダル1漕ぎで車輪が何回転するかを算出する）
@@ -16,12 +15,12 @@ class Gear
     chainring / cog.to_f
   end
 
-  # ギアインチを算出するgear_inchesメソッドは「タイヤの直径を計算する」と「ギアインチを算出する」の2つの責任を持っていたので分割
   def gear_inches
-    ratio * Wheel.new(rim, tire).diameter # Gearのメソッド内でWheelクラスのインスタンスを作りWheelクラスに応答するdiameterを呼び出し
+    # Wheelインスタンスの作成をGearクラスの外部へ移動することでGearとWheelクラス間の結合が切り離される
+    # Gearは変数@wheelに格納された、diameterに応答するオブジェクトであればWheelクラス以外のクラスとも共同作業が可能になった
+    ratio * wheel.diameter
   end
 
-  # 「車輪の円周を算出したい」というWheelクラスを独立させる明確なニーズが出たので分離させる
 end
 
 class Wheel
@@ -41,4 +40,4 @@ class Wheel
 
 end
 
-puts Gear.new(52, 11, 26, 2).gear_inches
+puts Gear.new(52, 11, Wheel.new(26, 1.5)).gear_inches
