@@ -17,7 +17,14 @@ class Gear
   end
 
   def gear_inches
-    ratio * wheel.diameter
+    # あるメソッド内に外部メッセージを埋め込んでいるとメソッド内の処理が複雑になるにつれて外部メッセージが変更によるメソッドが壊れるリスクが高まる
+    # 外部メッセージを使う場合は専用のメソッド内にカプセル化する
+    ratio * diameter
+  end
+
+  # 外部メッセージ用のメソッドを作りカプセル化
+  def diameter
+    wheel.diameter
   end
 
   # Wheelのインスタンスを作成する用のメソッドを準備する
