@@ -4,11 +4,11 @@ class Gear
   attr_reader :chainring, :cog, :rim, :tire
 
   # 依存オブジェクトの注入が難しい場合は依存先クラスのインスタンス作成をクラス内で分離する
-  # 今回はWheelクラスのインスタンス作成をinitializeメソッドで行いgear_inchesメソッド内がきれいになる
   def initialize(chainring, cog, rim, tire)
     @chainring = chainring
     @cog = cog
-    @wheel = Wheel.new(rim, tire)
+    @rim = rim
+    @tire = tire
   end
 
   # raiio：ギア比（ペダル1漕ぎで車輪が何回転するかを算出する）
@@ -18,6 +18,11 @@ class Gear
 
   def gear_inches
     ratio * wheel.diameter
+  end
+
+  # Wheelのインスタンスを作成する用のメソッドを準備する
+  def wheel
+    @wheel ||= Wheel.new(rim, tire)
   end
 
 end
