@@ -4,11 +4,16 @@ class Gear
   attr_reader :chainring, :cog, :wheel
 
   # 依存オブジェクトの注入が難しい場合は依存先クラスのインスタンス作成をクラス内で分離する
-  # 明示的にデフォルト値を設定する
+  # デフォルト値の設定処理用のメソッドを作り、initializeメソッドからデフォルト値を隔離する
   def initialize(**params)
-    @chainring = params.fetch(:chaining, 40)
-    @cog = params.fetch(:cog, 18)
+    params = defaults.merge(params)
+    @chainring = params[:chaining]
+    @cog = params[:cog]
     @wheel = params[:wheel]
+  end
+
+  def defaults
+    {:chaining => 40, :cog => 18}
   end
 
   # raiio：ギア比（ペダル1漕ぎで車輪が何回転するかを算出する）
