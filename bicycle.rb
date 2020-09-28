@@ -4,10 +4,10 @@ class Gear
   attr_reader :chainring, :cog, :wheel
 
   # 依存オブジェクトの注入が難しい場合は依存先クラスのインスタンス作成をクラス内で分離する
-  # 引数の順番依存を取り除くためにキーワード引数を使う
+  # 明示的にデフォルト値を設定する
   def initialize(**params)
-    @chainring = params[:chaining]
-    @cog = params[:cog]
+    @chainring = params.fetch(:chaining, 40)
+    @cog = params.fetch(:cog, 18)
     @wheel = params[:wheel]
   end
 
