@@ -10,41 +10,39 @@
 class Trip
   attr_reader :bicycles, :customers, :vehicle
 
-  # 引数の背後にあるクラスを想定したメソッドを作ってしまうと、初期に意図していなかったクラスの引数が必要となった場合
-  # 追加の処理が必要となってしまう
+  # より抽象的なPrepareに対して旅行を準備してもらうためのメッセージを送る
   def perepare(prepares)
     prepares.each {|prepare| 
-      case preparer
-      when Mecanic
-        prepare.prepare_bicycles(bicycles)
-      when TripCordinator
-        prepare.buy_food(customers)
-      when Driver
-        prepare.fill_water_tank(vehicle)
-        prepare.gas_up(vehicle)
-      end
+      prepare_trip(self)
     }
   end
 end
 
+# 以下、各クラスはそれぞれがPrepareのように振舞う→prepare_tripに応答するダックのように振舞う
 class TripCordinator
-  def buy_food(customers)
+  def prepare_trip(trip)
+    buy_food(trip.customers)
   end
+  ・
+  ・
 end
 
 def Driver
-  def gas_up(vehicle)
-  end
-
-  def fill_water_tank(vehicle)
+  def prepare_trip(trip)
+    vehicle = trip.vehicle
+    gas_up(vehicle)
+    fill_water_tank(vehicle)
+    ・
+    ・
   end
 end
 
 class Mecanic
-  def prepare_bicycles(bicycles)
-    bicycles.each{|bicycle| prepare_bicycle(bicycle)}
-  end
-
-  def prepare_bicycle(bicycle)
+  def prepare_trip(trip)
+    trip.bicycles.each{|bicycle|
+      prepare_bicycle(bicycle)}
+    end
+    ・
+    ・
   end
 end
