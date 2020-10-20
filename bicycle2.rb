@@ -1,30 +1,41 @@
-# 旅行に使用するロードバイクを表現するBicycleクラスを定義する
+# ロードバイクのみに対応していたBicycleクラスを
+# マウンテンバイクにも対応させる
 class Bicycle
-  attr_reader :size, :tape_color
+  attr_reader :style, :size, :tape_color,
+              :front_shock, :rear_shock
 
   def initialize(args)
+    @style = args[:style]
     @size = args[:size]
     @tape_color = args[:tape_color]
+    @front_shock = args[:front_shock]
+    @rear_shock = args[:rear_shock]
   end
 
-  # すげての自転車はデフォルト値として
-   # 同じタイヤサイズとチェーンサイズを持つ
+  # stylの中身を確認し、if文で振る舞いを分岐させる
   def spares
-    {
-      chain: "10-speed",
-      tire_size: "23",
-      tape_color: tape_color
-    }
+    if style == :road
+      {
+        chain: "10-speed",
+        tire_size: "23", # ミリメータ
+        tape_color: tape_color
+      }
+    else
+      {
+        chain: "10-speed",
+        tire_size: "2.1", # インチ
+        rear_shock: rear_shock
+      }
+    end
   end
-
   # その他のメソッド〜
 end
 
 bike = Bicycle.new(
-  size: "M",
-  tape_color: "red"
+  style: :mountain,
+  size: "S",
+  front_shock: "Manitou",
+  rear_shock: "Fox"
 )
-
-puts bike.size
 
 puts bike.spares
