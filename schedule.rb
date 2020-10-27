@@ -50,6 +50,7 @@ class Mechanic
   def lead_days
     4
   end
+  
 end
 
 require 'date'
